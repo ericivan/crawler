@@ -4,11 +4,10 @@ import (
 	"ericivan/crawler/engine"
 	"github.com/PuerkitoBio/goquery"
 	"bytes"
-	"strings"
 	"ericivan/crawler/model"
 	"regexp"
 	"strconv"
-	"fmt"
+	"strings"
 )
 
 func ParseProfile(content []byte) engine.ParseResult {
@@ -21,35 +20,46 @@ func ParseProfile(content []byte) engine.ParseResult {
 
 	document, _ := goquery.NewDocumentFromReader(reader)
 
-	selection := document.Find(".info")
+	document.Find(".info").Each(func(i int, selection *goquery.Selection) {
+		if (i == 4) {
 
-	name := selection.Find("h1[class=nickName]").Text()
+			name := selection.Find(".nickName").Text()
+			profile.Name = name
 
-	id := strings.Split(selection.Find(".id").Text(), "：")[1]
+			infoString := selection.Find(".des.f-cl").Text()
 
-	infoString := selection.Find(".des.f-cl").Text()
+			infoSlice := strings.Split(infoString, "|")
 
-	infoSlice := strings.Split(infoString, "|")
+			if len(infoSlice) == 6 {
+				job := infoSlice[0]
+				age := extractNum(infoSlice[1])
+				educ := infoSlice[2]
+				marrage := infoSlice[3]
+				height := extractNum(infoSlice[4])
 
-	job := infoSlice[0]
+				profile.Age = age
+				profile.Marriage = marrage
+				profile.Education = educ
+				profile.Height = height
+				profile.Job = job
+			}
+		}
 
-	age := extractNum(infoSlice[1])
+		IdParse := strings.Split(selection.Find(".id").Text(), "：")
 
-	educ := infoSlice[2]
+		if len(IdParse) == 2 {
+			id := IdParse[1]
+			profile.Id = id
+		}
+	})
 
-	marrage := infoSlice[3]
 
-	height := extractNum(infoSlice[4])
+	result.Items = append(result.Items, profile)
 
-	profile.Name = name
-	profile.Age = age
-	profile.Marriage = marrage
-	profile.Education = educ
-	profile.Height = height
-	profile.Job = job
-	profile.Id = id
-
-	fmt.Printf("%+v", profile)
+	result.Request = append(result.Request, engine.Request{
+		Url:        "",
+		ParserFunc: engine.NilParseFunc,
+	})
 	return result
 }
 

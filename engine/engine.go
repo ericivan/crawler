@@ -17,7 +17,13 @@ func Run(seeds ...Request) {
 		r := requests[0]
 		requests = requests[1:]
 
+
+		if r.Url == "" {
+			continue
+		}
+
 		log.Printf("Fetching %s", r.Url)
+
 		body, err := fetcher.Fetch(r.Url)
 
 		if err != nil {
@@ -30,7 +36,7 @@ func Run(seeds ...Request) {
 		requests = append(requests, parseResult.Request...)
 
 		for _, item := range parseResult.Items {
-			log.Printf("Got Item %s \n ", item)
+			log.Printf("Got Item %+v \n ", item)
 		}
 
 	}

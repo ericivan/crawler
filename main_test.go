@@ -9,7 +9,7 @@ import (
 
 func TestProfile(t *testing.T) {
 
-	content, err := fetcher.Fetch("http://album.zhenai.com/u/1303633404")
+	content, err := fetcher.Fetch("http://album.zhenai.com/u/1587689291")
 
 	//content, _ := fetcher.Fetch("http://zhenai.com/zhenghun")
 
@@ -20,4 +20,17 @@ func TestProfile(t *testing.T) {
 
 	//fmt.Println(string(content))
 	parser.ParseProfile(content)
+}
+
+func TestParseCity(t *testing.T) {
+
+	content,err:=fetcher.Fetch("http://www.zhenai.com/zhenghun/anyang")
+
+
+	if err!=nil{
+
+		fmt.Errorf(err.Error())
+	}
+
+	parser.ParseCity(content)
 }
