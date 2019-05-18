@@ -4,36 +4,63 @@ import (
 	"ericivan/crawler/engine"
 	"github.com/PuerkitoBio/goquery"
 	"bytes"
-	"fmt"
 	"strings"
+	"ericivan/crawler/model"
+	"regexp"
+	"strconv"
+	"fmt"
 )
 
 func ParseProfile(content []byte) engine.ParseResult {
 
 	result := engine.ParseResult{}
 
+	profile := model.Profile{}
+
 	reader := bytes.NewReader(content)
 
 	document, _ := goquery.NewDocumentFromReader(reader)
 
-	selection := document.Find("").Last()
+	selection := document.Find(".info")
 
-	fmt.Println(strings.Repeat("-", 100))
+	name := selection.Find("h1[class=nickName]").Text()
 
-	fmt.Println(selection.Html())
-	name := selection.Find(".name .nickName").Text()
-
-	id := selection.Find(".id").Text()
+	id := strings.Split(selection.Find(".id").Text(), "：")[1]
 
 	infoString := selection.Find(".des.f-cl").Text()
 
-	fmt.Printf("infoString is %s \n", infoString)
-	fmt.Printf("ID is %s \n", id)
-	fmt.Println(selection.Find("a").Html())
+	infoSlice := strings.Split(infoString, "|")
 
-	fmt.Printf("name is %s \n", name)
+	job := infoSlice[0]
 
-	fmt.Println(strings.Repeat("-", 100))
+	age := extractNum(infoSlice[1])
+
+	educ := infoSlice[2]
+
+	marrage := infoSlice[3]
+
+	height := extractNum(infoSlice[4])
+
+	profile.Name = name
+	profile.Age = age
+	profile.Marriage = marrage
+	profile.Education = educ
+	profile.Height = height
+	profile.Job = job
+	profile.Id = id
+
+	fmt.Printf("%+v", profile)
 	return result
+}
 
+func extractNum(c string) int {
+	num, err := strconv.Atoi(
+		string(regexp.MustCompile("[0-9]+").
+			Find([]byte(c))))
+
+	if err != nil {
+		return 0
+	}
+
+	return num
 }
