@@ -3,9 +3,14 @@ package engine
 import (
 	"ericivan/crawler/fetcher"
 	"log"
+	"errors"
 )
 
-func Run(seeds ...Request) {
+type SimpleEngine struct {
+
+}
+
+func (e SimpleEngine)Run(seeds ...Request) {
 	var requests []Request
 
 	for _, r := range seeds {
@@ -17,21 +22,12 @@ func Run(seeds ...Request) {
 		r := requests[0]
 		requests = requests[1:]
 
-
-		if r.Url == "" {
-			continue
-		}
-
-		log.Printf("Fetching %s", r.Url)
-
-		body, err := fetcher.Fetch(r.Url)
+		parseResult, err := Worker(r)
 
 		if err != nil {
-			log.Printf("Fetcher err: %s,%s", r.Url, err.Error())
+			log.Printf("error is %s", err.Error())
 			continue
 		}
-
-		parseResult := r.ParserFunc(body)
 
 		requests = append(requests, parseResult.Request...)
 
@@ -40,4 +36,20 @@ func Run(seeds ...Request) {
 		}
 
 	}
+}
+func Worker(r Request) (ParseResult, error) {
+	if r.Url == "" {
+		return ParseResult{}, errors.New("null Url")
+	}
+
+	log.Printf("Fetching %s", r.Url)
+
+	body, err := fetcher.Fetch(r.Url)
+
+	if err != nil {
+		log.Printf("Fetcher err: %s,%s", r.Url, err.Error())
+		return ParseResult{}, errors.New("null Url")
+	}
+
+	return r.ParserFunc(body), nil
 }
