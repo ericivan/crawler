@@ -7,12 +7,15 @@ import (
 
 func main() {
 
-	webSite := "http://www.zhenai.com/zhenghun"
+	webSite := "https://www.xl720.com/category/dongzuopian"
 
-	engine.Run(engine.Request{
+	var tasks []engine.Request
+
+	tasks = append(tasks, engine.Request{
 		Url:        webSite,
-		ParserFunc: parser.ParseCityList,
+		ParserFunc: parser.ParseMoveList,
 	})
 
+	engine.Run(tasks...)
 
 }

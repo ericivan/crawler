@@ -6,6 +6,7 @@ import (
 	"golang.org/x/text/encoding"
 	"bufio"
 	"golang.org/x/net/html/charset"
+	"fmt"
 	"github.com/henrylee2cn/surfer"
 )
 
@@ -13,12 +14,19 @@ func Fetch(url string) ([]byte, error) {
 	//resp, err := http.Get(url)
 
 	resp, err := surfer.Download(&surfer.Request{
-		Url: url,
+		Url:          url,
+		DownloaderID: surfer.SurfID,
 	})
+
+
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
+
+	//out, err := ioutil.ReadAll(resp.Body)
+	//
+	//fmt.Println(string(out))
 
 	if err != nil {
 		return nil, err
@@ -27,6 +35,11 @@ func Fetch(url string) ([]byte, error) {
 	reader := bufio.NewReader(resp.Body)
 
 	e, err := determineEncoding(reader)
+
+	if err != nil {
+		fmt.Printf("error is %s ", err.Error())
+		return nil, err
+	}
 
 	utf8Reader := transform.NewReader(reader, e.NewDecoder())
 
