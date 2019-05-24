@@ -21,6 +21,7 @@ func ParseProfile(content []byte) engine.ParseResult {
 	document, _ := goquery.NewDocumentFromReader(reader)
 
 	document.Find(".info").Each(func(i int, selection *goquery.Selection) {
+
 		if (i == 4) {
 
 			name := selection.Find(".nickName").Text()
@@ -52,7 +53,6 @@ func ParseProfile(content []byte) engine.ParseResult {
 			profile.Id = id
 		}
 	})
-
 
 	result.Items = append(result.Items, profile)
 

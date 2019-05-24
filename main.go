@@ -2,13 +2,13 @@ package main
 
 import (
 	"ericivan/crawler/engine"
-	"ericivan/crawler/zhenai/parser"
 	"ericivan/crawler/scheduler"
+	"ericivan/crawler/zhenai/parser"
 )
 
 func main() {
 
-	webSite := "http://www.zhenai.com/zhenghun"
+	webSite := "https://www.xl720.com/category/dongzuopian"
 
 	e := engine.ConcurrentEngine{
 		Scheduler:   &scheduler.SimpleScheduler{},
@@ -17,7 +17,7 @@ func main() {
 
 	e.Run(engine.Request{
 		Url:        webSite,
-		ParserFunc: parser.ParseCityList,
+		ParserFunc: parser.ParseMoveList,
 	})
 
 }
