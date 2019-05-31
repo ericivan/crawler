@@ -4,13 +4,15 @@ import (
 	"ericivan/crawler/fetcher"
 	"log"
 	"errors"
+	"time"
 )
 
-type SimpleEngine struct {
+var ticker = time.Tick(time.Microsecond * 500)
 
+type SimpleEngine struct {
 }
 
-func (e SimpleEngine)Run(seeds ...Request) {
+func (e SimpleEngine) Run(seeds ...Request) {
 	var requests []Request
 
 	for _, r := range seeds {
@@ -38,6 +40,7 @@ func (e SimpleEngine)Run(seeds ...Request) {
 	}
 }
 func Worker(r Request) (ParseResult, error) {
+	<-ticker
 	if r.Url == "" {
 		return ParseResult{}, errors.New("null Url")
 	}
