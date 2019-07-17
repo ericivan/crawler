@@ -4,6 +4,7 @@ import (
 	"ericivan/crawler/engine"
 	"ericivan/crawler/scheduler"
 	"ericivan/crawler/zhenai/parser"
+	"ericivan/crawler/persist"
 )
 
 func main() {
@@ -13,6 +14,7 @@ func main() {
 	e := engine.ConcurrentEngine{
 		Scheduler:   &scheduler.SimpleScheduler{},
 		WorkerCount: 10,
+		ItemChan: persist.ItemSaver(),
 	}
 
 	e.Run(engine.Request{
